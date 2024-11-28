@@ -350,7 +350,7 @@ int pc_handle_command(char *from_callsign, unsigned char *data, int len) {
 				break;
 			}
 
-			case SWCmdPacsatDefaultFileExpiryPeriod:
+			case SWCmdPacsatDefaultFileExpiryPeriod: ;
 				uint16_t age = sw_command->comArg.arguments[0] ;
 				g_dir_max_file_age_in_seconds = age * 24 * 60 * 60;
 				save_state();
@@ -361,7 +361,7 @@ int pc_handle_command(char *from_callsign, unsigned char *data, int len) {
 					debug_print("\n Error : Could not send OK Response to TNC \n");
 				}
 				break;
-			case SWCmdPacsatFileExpiryPeriod:
+			case SWCmdPacsatFileExpiryPeriod: ;
 				uint32_t file_id = sw_command->comArg.arguments[0] + (sw_command->comArg.arguments[1] << 16);
 				uint32_t file_age = sw_command->comArg.arguments[2] + (sw_command->comArg.arguments[3] << 16);
 				//This needs to set the expiry time on a specific file
