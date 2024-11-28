@@ -457,9 +457,8 @@ int ftl0_process_data(char *from_callsign, char *to_callsign, int channel, unsig
 
 		/* Process the EVENT through the UPLINK STATE MACHINE */
 		switch (ftl0_type) {
-		case AUTH_UPLOAD_CMD:
-			int auth_err;
-			auth_err = ftl0_process_auth_upload_cmd(selected_station, from_callsign, channel, data, len);
+		case AUTH_UPLOAD_CMD: ;
+			int auth_err = ftl0_process_auth_upload_cmd(selected_station, from_callsign, channel, data, len);
 			if (auth_err != ER_NONE) {
 				// send the error
 				rc = ftl0_send_err(from_callsign, channel, auth_err);
@@ -519,10 +518,9 @@ int ftl0_process_data(char *from_callsign, char *to_callsign, int channel, unsig
 		//debug_print("%s: UL_DATA_RX - %s\n",uplink_list[selected_station].callsign, ftl0_packet_type_names[ftl0_type]);
 
 		switch (ftl0_type) {
-		case DATA :
+		case DATA : ;
 //			debug_print("%s: UL_DATA_RX - DATA RECEIVED\n",uplink_list[selected_station].callsign);
-			int err;
-			err = ftl0_process_data_cmd(selected_station, from_callsign, channel, data, len);
+			int err = ftl0_process_data_cmd(selected_station, from_callsign, channel, data, len);
 			if (err != ER_NONE) {
 				rc = ftl0_send_nak(from_callsign, channel, err);
 				if (rc != EXIT_SUCCESS) {
@@ -563,10 +561,9 @@ int ftl0_process_data(char *from_callsign, char *to_callsign, int channel, unsig
 			}
 			return rc;
 			break;
-		case DATA_END :
+		case DATA_END : ;
 			//debug_print("%s: UL_DATA_RX - DATA END RECEIVED\n",uplink_list[selected_station].callsign);
-			int ftl0_length;
-			ftl0_length = ftl0_parse_packet_length(data);
+			int ftl0_length = ftl0_parse_packet_length(data);
 			if (ftl0_length != 0) {
 				err = ER_BAD_HEADER; /* This will cause a NAK to be sent as the data is corrupt in some way */
 			} else {
