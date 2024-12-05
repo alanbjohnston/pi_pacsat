@@ -28,6 +28,7 @@
 #include <pthread.h>
 #include <string.h>
 #include <signal.h>
+#include <time.h>
 
 /* Program Include files */
 #include "config.h"
@@ -42,6 +43,7 @@
 #include "ftl0.h"
 #include "iors_log.h"
 #include "keyfile.h"
+
 
 
 /* Forward declarations */
@@ -314,6 +316,7 @@ int main(int argc, char *argv[]) {
 		int rc = get_next_frame(frame_num, &frame);
 
 		if (rc == EXIT_SUCCESS) {
+			sleep(0.2);
 			frame_num++;
 			if (frame_num == MAX_RX_QUEUE_LEN)
 				frame_num=0;
