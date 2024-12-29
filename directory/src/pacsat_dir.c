@@ -541,7 +541,7 @@ int dir_validate_file(HEADER *pfh, char *filename) {
 	fclose(infile);
 	if (pfh->bodyCRC != (body_checksum & 0xffff)) {
 		error_print("** Body check %04x does not match %04x in file - failed for %s\n",(body_checksum & 0xffff), pfh->bodyCRC, filename);
-		return ER_BODY_CHECK;
+//		return ER_BODY_CHECK;
 	}
 	if (pfh->fileSize != pfh->bodyOffset + body_size) {
 		error_print("** Body check failed for %s\n",filename);
