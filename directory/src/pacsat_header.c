@@ -665,21 +665,23 @@ HEADER * pfh_load_from_file(char *filename) {
 	HEADER * pfh;
 	FILE * f = fopen(filename, "r");
 	if (f == NULL) {
+		debug_print("File couldn't be opened: %s\n",filename);
 		return NULL;
 	}
 	unsigned char buffer[MAX_PFH_LENGTH]; // needs to be bigger than largest header but does not need to be the whole file
 	int num = fread(buffer, sizeof(char), MAX_PFH_LENGTH, f);
 	if (num == 0) {
+		debug_print("Nothing was read\n");
 		fclose(f);
 		return NULL; // nothing was read
 	}
 	int size;
 	int crc_passed;
 	pfh = pfh_extract_header(buffer, num, &size, &crc_passed);
-	//debug_print("Read: %d Header size: %d\n",num, size);
+	debug_print("Read: %d Header size: %d\n",num, size);
 
 	if (!crc_passed) {
-		//debug_print("CRC failed when loading PFH from file\n");
+		debug_print("CRC failed when loading PFH from file\n");
 		free(pfh);
 		return NULL;
 	}
