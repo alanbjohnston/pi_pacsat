@@ -197,22 +197,48 @@ int main(int argc, char *argv[]) {
 	log_set_level(g_state_pacsat_log_level);
 	log_alog1(INFO_LOG, g_log_filename, ALOG_FS_STARTUP, 0);
 
-	rc = tnc_connect("127.0.0.1", AGW_PORT, g_bit_rate, g_max_frames_in_tx_buffer);
+	/**
+	 * Start a thread to listen to the TNC.  This will write all received frames into
+	 * a circular buffer.  This thread runs in the background and is always ready to
+	 * receive data from the TNC.
+	 *
+	 * The receive loop reads frames from the buffer and processes
+	 * them when we have time.
+	 *
+	 */
+	char *name = "TNC PACSAT Listen Thread";
+	rc = pthread_create( &tnc_listen_pthread, NULL, tnc_listen_process, (void*) name);
 	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not connect to TNC on port: %d\n",IORS_PORT);
-		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
+		error_print("FATAL. Could not start the TNC listen thread.\n");
+		log_err(g_log_filename, IORS_ERR_TNC_FAILURE);
+		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, rc);
+		exit(rc);
 	}
 
-	rc = tnc_start_monitoring('k'); // k monitors raw frames, required to process UI frames
-	rc = tnc_start_monitoring('m'); // monitors connected frames, also required to monitor T frames to manage the TX frame queue
-	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not monitor TNC \n");
-		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
-	}
+	sleep(3); // Let TNC Connect
+
+//	rc = tnc_connect("127.0.0.1", AGW_PORT, g_bit_rate, g_max_frames_in_tx_buffer);
+//	if (rc != EXIT_SUCCESS) {
+//		error_print("\n Error : Could not connect to TNC on port: %d\n",IORS_PORT);
+//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
+//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
+//		exit(EXIT_FAILURE);
+//	}
+
+//	rc = tnc_start_monitoring('k'); // k monitors raw frames, required to process UI frames
+//	if (rc != EXIT_SUCCESS) {
+//		error_print("\n Error : Could not monitor TNC \n");
+//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
+//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
+//		exit(EXIT_FAILURE);
+//	}
+//	rc = tnc_start_monitoring('m'); // monitors connected frames, also required to monitor T frames to manage the TX frame queue
+//	if (rc != EXIT_SUCCESS) {
+//		error_print("\n Error : Could not monitor TNC \n");
+//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
+//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
+//		exit(EXIT_FAILURE);
+//	}
 
 	if (g_run_self_test) {
 		debug_print("Running Self Tests..\n");
@@ -264,22 +290,6 @@ int main(int argc, char *argv[]) {
 		exit(EXIT_FAILURE);
 	}
 
-	/**
-	 * Start a thread to listen to the TNC.  This will write all received frames into
-	 * a circular buffer.  This thread runs in the background and is always ready to
-	 * receive data from the TNC.
-	 *
-	 * The receive loop reads frames from the buffer and processes
-	 * them when we have time.
-	 */
-	char *name = "TNC Listen Thread";
-	rc = pthread_create( &tnc_listen_pthread, NULL, tnc_listen_process, (void*) name);
-	if (rc != EXIT_SUCCESS) {
-		error_print("FATAL. Could not start the TNC listen thread.\n");
-		log_err(g_log_filename, IORS_ERR_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, rc);
-		exit(rc);
-	}
 
 	/* Initialize the directory */
 	if (dir_init(data_folder_path) != EXIT_SUCCESS) { error_print("** Could not initialize the dir\n"); return EXIT_FAILURE; }
