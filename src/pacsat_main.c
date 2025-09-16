@@ -197,6 +197,19 @@ int main(int argc, char *argv[]) {
 	log_set_level(g_state_pacsat_log_level);
 	log_alog1(INFO_LOG, g_log_filename, ALOG_FS_STARTUP, 0);
 
+
+	/**
+	 * Register the callsign that will accept connection requests.
+	 */
+	tnc_register_callsign(g_bbs_callsign);
+	//	if (rc != EXIT_SUCCESS) {
+	//		error_print("\n Error : Could not register callsign with TNC \n");
+	//		//TODO - split call and ssid!
+	//		log_alog2(ERR_LOG, g_log_filename, ALOG_IORS_ERR, g_bbs_callsign, 0, IORS_ERR_FS_TNC_FAILURE);
+	//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
+	//		exit(EXIT_FAILURE);
+	//	}
+
 	/**
 	 * Start a thread to listen to the TNC.  This will write all received frames into
 	 * a circular buffer.  This thread runs in the background and is always ready to
@@ -278,17 +291,6 @@ int main(int argc, char *argv[]) {
 		exit (rc);
 	}
 
-	/**
-	 * Register the callsign that will accept connection requests.
-	 */
-	rc = tnc_register_callsign(g_bbs_callsign);
-	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not register callsign with TNC \n");
-		//TODO - split call and ssid!
-		log_alog2(ERR_LOG, g_log_filename, ALOG_IORS_ERR, g_bbs_callsign, 0, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
-	}
 
 
 	/* Initialize the directory */
