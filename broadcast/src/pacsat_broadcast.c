@@ -74,7 +74,7 @@ packet: NO
 
 /* Program Include Files */
 #include "config.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 #include "state_file.h"
 #include "debug.h"
 #include "agw_tnc.h"

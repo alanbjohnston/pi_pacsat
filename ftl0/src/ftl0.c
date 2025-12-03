@@ -40,7 +40,7 @@
 #include "pacsat_dir.h"
 #include "ftl0.h"
 #include "pacsat_dir.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 
 /* An entry on the uplink list keeps track of the file upload and where we are in the upload process */
 struct ftl0_state_machine_t {

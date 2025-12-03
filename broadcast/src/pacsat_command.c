@@ -15,7 +15,7 @@
 
 /* Program Include Files */
 #include "config.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 #include "state_file.h"
 #include "debug.h"
 #include "pacsat_header.h"
@@ -24,7 +24,7 @@
 #include "pacsat_dir.h"
 #include "str_util.h"
 #include "ax25_tools.h"
-#include "iors_log.h"
+#include "pacsat_log.h"
 
 /* Static vars*/
 static int last_command_rc = EXIT_SUCCESS;;

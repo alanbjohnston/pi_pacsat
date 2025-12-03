@@ -43,7 +43,7 @@ main-build: pi_pacsat
 pi_pacsat: $(OBJS) $(USER_OBJS) makefile $(OPTIONAL_TOOL_DEPS)
 	@echo 'Building target: $@'
 	@echo 'Invoking: GCC C Linker'
-	gcc  -o "pi_pacsat" $(OBJS) $(USER_OBJS) $(LIBS) -lpthread -lg0kla_common
+	gcc -L/usr/local/lib/iors_common -o "pi_pacsat" $(OBJS) $(USER_OBJS) $(LIBS) -liors_common -lpthread
 	@echo 'Finished building target: $@'
 	@echo ' '
 
