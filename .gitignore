@@ -39,3 +39,4 @@ pacsat.config
 /dir_test/
 
 # IDE files
+/Debug/

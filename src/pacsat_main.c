@@ -203,13 +203,6 @@ int main(int argc, char *argv[]) {
 	 * Register the callsign that will accept connection requests.
 	 */
 	tnc_register_callsign(g_bbs_callsign);
-	//	if (rc != EXIT_SUCCESS) {
-	//		error_print("\n Error : Could not register callsign with TNC \n");
-	//		//TODO - split call and ssid!
-	//		log_alog2(ERR_LOG, g_log_filename, ALOG_IORS_ERR, g_bbs_callsign, 0, IORS_ERR_FS_TNC_FAILURE);
-	//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-	//		exit(EXIT_FAILURE);
-	//	}
 
 	/**
 	 * Start a thread to listen to the TNC.  This will write all received frames into
@@ -230,29 +223,6 @@ int main(int argc, char *argv[]) {
 	}
 
 	sleep(3); // Let TNC Connect
-
-//	rc = tnc_connect("127.0.0.1", AGW_PORT, g_bit_rate, g_max_frames_in_tx_buffer);
-//	if (rc != EXIT_SUCCESS) {
-//		error_print("\n Error : Could not connect to TNC on port: %d\n",IORS_PORT);
-//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-//		exit(EXIT_FAILURE);
-//	}
-
-//	rc = tnc_start_monitoring('k'); // k monitors raw frames, required to process UI frames
-//	if (rc != EXIT_SUCCESS) {
-//		error_print("\n Error : Could not monitor TNC \n");
-//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-//		exit(EXIT_FAILURE);
-//	}
-//	rc = tnc_start_monitoring('m'); // monitors connected frames, also required to monitor T frames to manage the TX frame queue
-//	if (rc != EXIT_SUCCESS) {
-//		error_print("\n Error : Could not monitor TNC \n");
-//		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-//		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-//		exit(EXIT_FAILURE);
-//	}
 
 	if (g_run_self_test) {
 		debug_print("Running Self Tests..\n");
