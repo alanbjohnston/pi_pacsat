@@ -35,4 +35,8 @@ You need to tell it where the data will be saved and where the config file is.  
 ```
 ./pi_pacsat -c ~/pacsat.cfg -d ~/pacsat_data
 ```
+
+This code was ported to FreeRTOS so it could run on a TI TMS570 processor as part of a future satellite build.  You can find that code here: https://github.com/AMSAT-NA/PacSatSW
+
+
 This supports broadcast requests, transmissions and file uploads. It also supports a number of commands.  Commands are not encrypted and are sent in the clear, as required by an Amateur Radio license.  See the pacsat ground station and its documentation. 
