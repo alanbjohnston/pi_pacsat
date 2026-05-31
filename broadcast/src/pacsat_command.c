@@ -15,7 +15,7 @@
 
 /* Program Include Files */
 #include "config.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 #include "state_file.h"
 #include "debug.h"
 #include "pacsat_header.h"
@@ -24,7 +24,7 @@
 #include "pacsat_dir.h"
 #include "str_util.h"
 #include "ax25_tools.h"
-#include "iors_log.h"
+#include "pacsat_log.h"
 
 /* Static vars*/
 static int last_command_rc = EXIT_SUCCESS;;
@@ -196,7 +196,7 @@ int pc_handle_command(char *from_callsign, unsigned char *data, int len) {
 
 				DIR_NODE *node = dir_get_node_by_id(file_id);
 				if (node == NULL) {
-					error_print("File %ld not available\n",file_id);
+					error_print("File %d not available\n",file_id);
 					last_command_rc = PB_ERR_FILE_NOT_AVAILABLE;
 					int r = pb_send_err(from_callsign, PB_ERR_FILE_NOT_AVAILABLE);
 					if (r != EXIT_SUCCESS) {
@@ -240,7 +240,7 @@ int pc_handle_command(char *from_callsign, unsigned char *data, int len) {
 
 				DIR_NODE *node = dir_get_node_by_id(file_id);
 				if (node == NULL) {
-					error_print("File %ld not available\n",file_id);
+					error_print("File %d not available\n",file_id);
 					last_command_rc = PB_ERR_FILE_NOT_AVAILABLE;
 					int r = pb_send_err(from_callsign, PB_ERR_FILE_NOT_AVAILABLE);
 					if (r != EXIT_SUCCESS) {
@@ -368,7 +368,7 @@ int pc_handle_command(char *from_callsign, unsigned char *data, int len) {
 				//This needs to set the expiry time on a specific file
 				DIR_NODE *node = dir_get_node_by_id(file_id);
 				if (node == NULL) {
-					error_print("File %ld not available\n",file_id);
+					error_print("File %d not available\n",file_id);
 					last_command_rc = PB_ERR_FILE_NOT_AVAILABLE;
 					int r = pb_send_err(from_callsign, PB_ERR_FILE_NOT_AVAILABLE);
 					if (r != EXIT_SUCCESS) {

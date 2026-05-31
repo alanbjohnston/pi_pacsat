@@ -40,7 +40,7 @@
 #include "pacsat_dir.h"
 #include "ftl0.h"
 #include "pacsat_dir.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 
 /* An entry on the uplink list keeps track of the file upload and where we are in the upload process */
 struct ftl0_state_machine_t {
@@ -1327,7 +1327,8 @@ int ftl0_load_upload_table() {
 	//debug_print("Loading upload table from: %s:\n", g_upload_table_path);
 	FILE *file = fopen ( g_upload_table_path, "r" );
 	if ( file == NULL ) {
-		error_print("Could not load upload table file: %s\n", g_upload_table_path);
+		/* No error if the file is missing.  It has not yet been created. */
+		//error_print("Could not load upload table file: %s\n", g_upload_table_path);
 		return EXIT_FAILURE;
 	}
 	int i = 0;

@@ -33,16 +33,17 @@
 #include "config.h"
 #include "common_config.h"
 #include "state_file.h"
-#include "iors_command.h"
+#include "uplink_command.h"
 #include "agw_tnc.h"
 #include "str_util.h"
 #include "pacsat_header.h"
 #include "pacsat_dir.h"
 #include "pacsat_broadcast.h"
 #include "ftl0.h"
-#include "iors_log.h"
+#include "pacsat_log.h"
+#ifdef IORS_CONTROL_BUILD
 #include "keyfile.h"
-
+#endif
 
 /* Forward declarations */
 //void process_frames_queued(char * data, int len);
@@ -122,8 +123,8 @@ void signal_exit (int sig) {
 }
 
 void signal_load_config (int sig) {
-	error_print (" Signal received, updating config not yet implemented...\n");
-	// TODO SIHUP should reload the config perhaps
+	load_config(config_file_name);
+	load_state("pacsat.state");
 }
 
 int main(int argc, char *argv[]) {
@@ -197,22 +198,31 @@ int main(int argc, char *argv[]) {
 	log_set_level(g_state_pacsat_log_level);
 	log_alog1(INFO_LOG, g_log_filename, ALOG_FS_STARTUP, 0);
 
-	rc = tnc_connect("127.0.0.1", AGW_PORT, g_bit_rate, g_max_frames_in_tx_buffer);
+
+	/**
+	 * Register the callsign that will accept connection requests.
+	 */
+	tnc_register_callsign(g_bbs_callsign);
+
+	/**
+	 * Start a thread to listen to the TNC.  This will write all received frames into
+	 * a circular buffer.  This thread runs in the background and is always ready to
+	 * receive data from the TNC.
+	 *
+	 * The receive loop reads frames from the buffer and processes
+	 * them when we have time.
+	 *
+	 */
+	char *name = "TNC PACSAT Listen Thread";
+	rc = pthread_create( &tnc_listen_pthread, NULL, tnc_listen_process, (void*) name);
 	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not connect to TNC on port: %d\n",IORS_PORT);
-		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
+		error_print("FATAL. Could not start the TNC listen thread.\n");
+		log_err(g_log_filename, ERR_TNC_FAILURE);
+		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, rc);
+		exit(rc);
 	}
 
-	rc = tnc_start_monitoring('k'); // k monitors raw frames, required to process UI frames
-	rc = tnc_start_monitoring('m'); // monitors connected frames, also required to monitor T frames to manage the TX frame queue
-	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not monitor TNC \n");
-		log_err(g_log_filename, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
-	}
+	sleep(3); // Let TNC Connect
 
 	if (g_run_self_test) {
 		debug_print("Running Self Tests..\n");
@@ -252,40 +262,14 @@ int main(int argc, char *argv[]) {
 		exit (rc);
 	}
 
-	/**
-	 * Register the callsign that will accept connection requests.
-	 */
-	rc = tnc_register_callsign(g_bbs_callsign);
-	if (rc != EXIT_SUCCESS) {
-		error_print("\n Error : Could not register callsign with TNC \n");
-		//TODO - split call and ssid!
-		log_alog2(ERR_LOG, g_log_filename, ALOG_IORS_ERR, g_bbs_callsign, 0, IORS_ERR_FS_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, EXIT_FAILURE);
-		exit(EXIT_FAILURE);
-	}
 
-	/**
-	 * Start a thread to listen to the TNC.  This will write all received frames into
-	 * a circular buffer.  This thread runs in the background and is always ready to
-	 * receive data from the TNC.
-	 *
-	 * The receive loop reads frames from the buffer and processes
-	 * them when we have time.
-	 */
-	char *name = "TNC Listen Thread";
-	rc = pthread_create( &tnc_listen_pthread, NULL, tnc_listen_process, (void*) name);
-	if (rc != EXIT_SUCCESS) {
-		error_print("FATAL. Could not start the TNC listen thread.\n");
-		log_err(g_log_filename, IORS_ERR_TNC_FAILURE);
-		log_alog1(INFO_LOG, g_log_filename, ALOG_FS_SHUTDOWN, rc);
-		exit(rc);
-	}
 
 	/* Initialize the directory */
 	if (dir_init(data_folder_path) != EXIT_SUCCESS) { error_print("** Could not initialize the dir\n"); return EXIT_FAILURE; }
 	dir_load();
+#ifdef IORS_CONTROL_BUILD
     key_load(command_key_file);
-
+#endif
 	init_commanding();
 	ftl0_load_upload_table();
 
@@ -403,6 +387,7 @@ int main(int argc, char *argv[]) {
 		if ((now - last_file_queue_check_time) > g_file_queue_check_period_in_seconds) {
 			last_file_queue_check_time = now;
 			dir_file_queue_check(now, get_wod_folder(), PFH_TYPE_WL, "WOD");
+			dir_file_queue_check(now, get_senwod_folder(), PFH_TYPE_SEN_WOD, "SENWOD");
 			dir_file_queue_check(now, get_log_folder(), PFH_TYPE_AL, "LOG");
 			dir_file_queue_check(now, get_txt_folder(), PFH_TYPE_ASCII, "TXT");
 		}

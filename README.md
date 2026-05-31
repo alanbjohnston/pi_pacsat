@@ -2,7 +2,7 @@
 This is an Open source implementation of the Pacsat protocol based on public documents.  Designed to run on a Linux computer using Direwolf as the TNC.  
 For those interested I have a list of the Pacsat Protocol documents on this page: https://www.g0kla.com/pacsat/index.php
 
-This is dependant on https://github.com/ac2cz/iors_common
+This is dependant on https://github.com/ac2cz/g0kla_common
 
 To build this, clone the repository then cd into the Debug folder
 
@@ -27,7 +27,7 @@ max_frames_in_tx_buffer=2
 To run the program start direwolf in one terminal and then run Pacsat in another.  It should connect to the direwolf AGW engine to send and receive packets.
 To run pi_pacsat you need to have a library path for the library.  Run this first:
 ```
-export LD_LIBRARY_PATH=/mnt/usb-disk/ariss/lib:/usr/local/lib/iors_common:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/usr/local/lib/:$LD_LIBRARY_PATH
 ```
 Then you need to pass it some switches:
 pi_pacsat -h will show you what they are.
@@ -35,4 +35,7 @@ You need to tell it where the data will be saved and where the config file is.  
 ```
 ./pi_pacsat -c ~/pacsat.cfg -d ~/pacsat_data
 ```
-This supports broadcast requests, transmissions and file uploads.
+
+This supports broadcast requests, transmissions and file uploads. It also supports a number of commands.  Commands are not encrypted and are sent in the clear, as required by an Amateur Radio license.  See the pacsat ground station and its documentation. 
+
+This code was ported to FreeRTOS so it could run on a TI TMS570 processor as part of a future satellite build.  You can find that code here: https://github.com/AMSAT-NA/PacSatSW

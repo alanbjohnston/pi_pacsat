@@ -45,6 +45,7 @@ char *get_data_folder();
 char *get_dir_folder();
 char *get_upload_folder();
 char *get_wod_folder();
+char *get_senwod_folder();
 char *get_log_folder();
 char *get_txt_folder();
 int dir_next_file_number();
