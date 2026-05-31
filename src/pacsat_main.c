@@ -181,6 +181,7 @@ int main(int argc, char *argv[]) {
 
 	printf("PI-ARISS In-orbit File Server\n");
 	printf("Build: %s\n", VERSION);
+	fflush();
 
 	int rc = EXIT_SUCCESS;
 
@@ -226,6 +227,7 @@ int main(int argc, char *argv[]) {
 
 	if (g_run_self_test) {
 		debug_print("Running Self Tests..\n");
+		fflush();
 		rc = test_ftl0_frame();
 		if (rc != EXIT_SUCCESS) exit(rc);
 		rc = test_ftl0_list();
@@ -259,13 +261,14 @@ int main(int argc, char *argv[]) {
 		if (rc != EXIT_SUCCESS) exit(rc);
 
 		debug_print("ALL TESTS PASSED\n");
+		fflush();
 		exit (rc);
 	}
 
 
 
 	/* Initialize the directory */
-	if (dir_init(data_folder_path) != EXIT_SUCCESS) { error_print("** Could not initialize the dir\n"); return EXIT_FAILURE; }
+	if (dir_init(data_folder_path) != EXIT_SUCCESS) { error_print("** Could not initialize the dir\n"); fflush(); return EXIT_FAILURE; }
 	dir_load();
 #ifdef IORS_CONTROL_BUILD
     key_load(command_key_file);
@@ -305,6 +308,7 @@ int main(int argc, char *argv[]) {
 			switch (frame.header->data_kind) {
 			case 'X': // Response to callsign registration
 				debug_print("Set BBS Callsign: %s:\n",frame.header->call_from);
+				fflush();
 				break;
 			case 'T': // Response to sending a UI frame
 				/* The T frame is a confirm that a frame was sent.  We use this event to decrement how many
@@ -360,6 +364,7 @@ int main(int argc, char *argv[]) {
 				print_header(frame.header);
 				print_data(frame.data, frame.header->data_len);
 				debug_print("\n");
+				fflush();
 				ftl0_disconnected(frame.header->call_from, frame.header->call_to, frame.data, frame.header->data_len);
 				break;
 			}
