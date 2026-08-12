@@ -39,7 +39,7 @@
  *
  * */
 #define debug_print(fmt, ...) \
-            do { if (DEBUG) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0)
+            do { if (DEBUG) fprintf(stdout, fmt, ##__VA_ARGS__); } while (0); fflush(stdout);
 
 #define verbose_print(fmt, ...) \
             if (g_verbose) fprintf(stdout, fmt, ##__VA_ARGS__);
